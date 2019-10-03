@@ -1,23 +1,23 @@
 /*
  * Nestopia UE
- * 
+ *
  * Copyright (C) 2012-2018 R. Danbrook
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
- * 
+ *
  */
 
 #include <SDL.h>
@@ -43,35 +43,44 @@ void nstsdl_video_create() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	
+
 	Uint32 windowflags = SDL_WINDOW_SHOWN|SDL_WINDOW_OPENGL;
-	
+
 	dimensions_t rendersize = nst_video_get_dimensions_render();
-	
+
+	// window will be placed in the center of the screen at the first time
+	int position_x = conf.window_position_x;
+	int position_y = conf.window_position_y;
+	if (position_x == -1 || position_y == -1)
+	{
+		position_x = SDL_WINDOWPOS_UNDEFINED;
+		position_y = SDL_WINDOWPOS_UNDEFINED;
+	}
+
 	sdlwindow = SDL_CreateWindow(
 		NULL,								//    window title
-		SDL_WINDOWPOS_UNDEFINED,			//    initial x position
-		SDL_WINDOWPOS_UNDEFINED,			//    initial y position
+		position_x,							//    initial x position
+		position_y,							//    initial y position
 		rendersize.w,						//    width, in pixels
 		rendersize.h,						//    height, in pixels
 		windowflags);
-	
+
 	if(sdlwindow == NULL) {
 		fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
 	}
-	
+
 	glcontext = SDL_GL_CreateContext(sdlwindow);
 	SDL_GL_MakeCurrent(sdlwindow, glcontext);
 	SDL_GL_SetSwapInterval(conf.timing_vsync);
-	
+
 	if(glcontext == NULL) {
 		fprintf(stderr, "Could not create glcontext: %s\n", SDL_GetError());
 	}
-	
+
 	fprintf(stderr, "OpenGL: %s\n", glGetString(GL_VERSION));
-	
+
 	nst_video_set_dimensions_screen(nstsdl_video_get_dimensions());
-	
+
 	// Fullscreen the window after creation
 	if (conf.video_fullscreen) { nstsdl_video_toggle_fullscreen(); }
 }
@@ -125,21 +134,21 @@ void nstsdl_video_swapbuffers() {
 }
 
 void nstsdl_video_toggle_fullscreen() {
-	
+
 	video_toggle_fullscreen();
-	
+
 	Uint32 flags;
 	if (conf.video_fullscreen) { flags = SDL_WINDOW_FULLSCREEN_DESKTOP; }
 	else { flags = 0; }
-	
+
 	SDL_SetWindowFullscreen(sdlwindow, flags);
-	
+
 	nstsdl_video_set_cursor();
-	
+
 	nst_video_set_dimensions_screen(nstsdl_video_get_dimensions());
-	
+
 	video_init();
-	
+
 	nstsdl_video_resize();
 }
 
@@ -155,4 +164,8 @@ void nstsdl_video_toggle_scale() {
 	nst_video_set_dimensions_screen(nstsdl_video_get_dimensions());
 	video_init();
 	nstsdl_video_resize();
+}
+
+void nstsdl_video_get_position(int* x, int* y) {
+	SDL_GetWindowPosition(sdlwindow, x, y);
 }

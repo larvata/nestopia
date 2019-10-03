@@ -26,7 +26,7 @@ typedef struct {
 	bool video_stretch_aspect;
 	bool video_unlimited_sprites;
 	bool video_xbr_pixel_blending;
-	
+
 	// Audio
 	int audio_api;
 	bool audio_stereo;
@@ -43,14 +43,14 @@ typedef struct {
 	int audio_vol_vrc7;
 	int audio_vol_n163;
 	int audio_vol_s5b;
-	
+
 	// Timing
 	int timing_speed;
 	int timing_ffspeed;
 	int timing_turbopulse;
 	bool timing_vsync;
 	bool timing_limiter;
-	
+
 	// Misc
 	//int misc_video_region;
 	int misc_default_system;
@@ -66,6 +66,10 @@ typedef struct {
 	int misc_homebrew_exit;
 	int misc_homebrew_stdout;
 	int misc_homebrew_stderr;
+
+	// window
+	int window_position_x;
+	int window_position_y;
 } settings_t;
 
 void config_file_read(const char *nstdir);

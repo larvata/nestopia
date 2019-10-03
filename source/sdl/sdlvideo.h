@@ -16,4 +16,6 @@ void nstsdl_video_toggle_fullscreen();
 void nstsdl_video_toggle_filter();
 void nstsdl_video_toggle_scale();
 
+void nstsdl_video_get_position(int* x, int* y);
+
 #endif

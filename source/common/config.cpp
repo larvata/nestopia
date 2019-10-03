@@ -1,6 +1,6 @@
 /*
  * Nestopia UE
- * 
+ *
  * Copyright (C) 2012-2016 R. Danbrook
  * Copyright (C) 2018-2018 Phil Smith
  *
@@ -8,17 +8,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -43,10 +43,10 @@ void config_file_read(const char *nstdir) {
 
 void config_file_write(const char *nstdir) {
 	// Write the config file
-	
+
 	char confpath[256];
 	snprintf(confpath, sizeof(confpath), "%snestopia.conf", nstdir);
-	
+
 	FILE *fp = fopen(confpath, "w");
 	if (fp != NULL)	{
 		// Video
@@ -85,7 +85,7 @@ void config_file_write(const char *nstdir) {
 		fprintf(fp, "unlimited_sprites=%d\n", conf.video_unlimited_sprites);
 		fprintf(fp, "xbr_pixel_blending=%d\n", conf.video_xbr_pixel_blending);
 		fprintf(fp, "\n"); // End of Section
-		
+
 		// Audio
 		fprintf(fp, "[audio]\n");
 		fprintf(fp, "; 0=SDL, 1=libao, 2=jack\n");
@@ -108,7 +108,7 @@ void config_file_write(const char *nstdir) {
 		fprintf(fp, "vol_n163=%d\n", conf.audio_vol_n163);
 		fprintf(fp, "vol_s5b=%d\n", conf.audio_vol_s5b);
 		fprintf(fp, "\n"); // End of Section
-		
+
 		// Timing
 		fprintf(fp, "[timing]\n");
 		fprintf(fp, "; Base speed for NTSC in Frames per Second.\n");
@@ -121,7 +121,7 @@ void config_file_write(const char *nstdir) {
 		fprintf(fp, "vsync=%d\n", conf.timing_vsync);
 		fprintf(fp, "limiter=%d\n", conf.timing_limiter);
 		fprintf(fp, "\n"); // End of Section
-		
+
 		// Misc
 		fprintf(fp, "[misc]\n");
 		fprintf(fp, "; 0=Auto, 1=NTSC, 2=PAL, 3=Famicom, 4=Dendy\n");
@@ -143,6 +143,11 @@ void config_file_write(const char *nstdir) {
 		fprintf(fp, "homebrew_stdout=%d\n", conf.misc_homebrew_stdout);
 		fprintf(fp, "homebrew_stderr=%d\n", conf.misc_homebrew_stderr);
 
+		// Window
+		fprintf(fp, "[window]\n");
+		fprintf(fp, "window_position_x=%d\n", conf.window_position_x);
+		fprintf(fp, "window_position_y=%d\n\n", conf.window_position_y);
+
 		fclose(fp);
 	}
 	else {
@@ -151,7 +156,7 @@ void config_file_write(const char *nstdir) {
 }
 
 void config_set_default() {
-	
+
 	// Video
 	conf.video_filter = 0;
 	conf.video_scale_factor = 2;
@@ -175,7 +180,7 @@ void config_set_default() {
 	conf.video_stretch_aspect = false;
 	conf.video_unlimited_sprites = false;
 	conf.video_xbr_pixel_blending = false;
-	
+
 	// Audio
 	conf.audio_api = 0;
 	conf.audio_stereo = false;
@@ -192,14 +197,14 @@ void config_set_default() {
 	conf.audio_vol_vrc7 = 85;
 	conf.audio_vol_n163 = 85;
 	conf.audio_vol_s5b = 85;
-	
+
 	// Timing
 	conf.timing_speed = 60;
 	conf.timing_ffspeed = 3;
 	conf.timing_turbopulse = 3;
 	conf.timing_vsync = true;
 	conf.timing_limiter = true;
-	
+
 	// Misc
 	conf.misc_default_system = 0;
 	conf.misc_soft_patching = true;
@@ -215,12 +220,16 @@ void config_set_default() {
 	conf.misc_homebrew_exit = -1;
 	conf.misc_homebrew_stdout = -1;
 	conf.misc_homebrew_stderr = -1;
+
+	// Window
+	conf.window_position_x = -1;
+	conf.window_position_y = -1;
 }
 
 static int config_match(void* user, const char* section, const char* name, const char* value) {
 	// Match values from config file and populate live config
 	settings_t* pconfig = (settings_t*)user;
-	
+
 	// Video
 	if (MATCH("video", "filter")) { pconfig->video_filter = atoi(value); }
 	else if (MATCH("video", "scale_factor")) { pconfig->video_scale_factor = atoi(value); }
@@ -244,7 +253,7 @@ static int config_match(void* user, const char* section, const char* name, const
 	else if (MATCH("video", "stretch_aspect")) { pconfig->video_stretch_aspect = atoi(value); }
 	else if (MATCH("video", "unlimited_sprites")) { pconfig->video_unlimited_sprites = atoi(value); }
 	else if (MATCH("video", "xbr_pixel_blending")) { pconfig->video_xbr_pixel_blending = atoi(value); }
-	
+
 	// Audio
 	else if (MATCH("audio", "api")) { pconfig->audio_api = atoi(value); }
 	else if (MATCH("audio", "stereo")) { pconfig->audio_stereo = atoi(value); }
@@ -261,14 +270,14 @@ static int config_match(void* user, const char* section, const char* name, const
 	else if (MATCH("audio", "vol_vrc7")) { pconfig->audio_vol_vrc7 = atoi(value); }
 	else if (MATCH("audio", "vol_n163")) { pconfig->audio_vol_n163 = atoi(value); }
 	else if (MATCH("audio", "vol_s5b")) { pconfig->audio_vol_s5b = atoi(value); }
-	
+
 	// Timing
 	else if (MATCH("timing", "speed")) { pconfig->timing_speed = atoi(value); }
 	else if (MATCH("timing", "ffspeed")) { pconfig->timing_ffspeed = atoi(value); }
 	else if (MATCH("timing", "turbopulse")) { pconfig->timing_turbopulse = atoi(value); }
 	else if (MATCH("timing", "vsync")) { pconfig->timing_vsync = atoi(value); }
 	else if (MATCH("timing", "limiter")) { pconfig->timing_limiter = atoi(value); }
-    
+
 	// Misc
 	else if (MATCH("misc", "default_system")) { pconfig->misc_default_system = atoi(value); }
 	else if (MATCH("misc", "soft_patching")) { pconfig->misc_soft_patching = atoi(value); }
@@ -284,6 +293,10 @@ static int config_match(void* user, const char* section, const char* name, const
 	else if (MATCH("misc", "homebrew_exit")) { pconfig->misc_homebrew_exit = atoi(value); }
 	else if (MATCH("misc", "homebrew_stdout")) { pconfig->misc_homebrew_stdout = atoi(value); }
 	else if (MATCH("misc", "homebrew_stderr")) { pconfig->misc_homebrew_stderr = atoi(value); }
+
+	// Window
+	else if (MATCH("window", "window_position_x")) { pconfig->window_position_x = atoi(value); }
+	else if (MATCH("window", "window_position_y")) { pconfig->window_position_y = atoi(value); }
 
 	else { return 0; }
 	return 1;
