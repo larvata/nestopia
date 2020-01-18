@@ -2,6 +2,14 @@
 1. Added a window position remember feature for SDL.
 
 ## Building (macOS only)
+
+#### Install Dependencies
+
+```
+brew install autoconf automake autoconf-archive pkg-config libarchive libepoxy
+```
+
+#### Compile 
 ```
 export PKG_CONFIG_PATH=/usr/local/opt/libarchive/lib/pkgconfig/
 autoreconf -vif
